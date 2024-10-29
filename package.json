@@ -1,0 +1,28 @@
+{
+  "name": "e_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon",
+    "build": "rimraf ./build && tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.7",
+    "sequelize": "^6.37.5",
+    "tsc-node": "^0.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.8.2",
+    "@types/sequelize": "^4.28.20",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}

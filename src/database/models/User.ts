@@ -1,10 +1,5 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  
-} from "sequelize-typescript";
+import { Table, Column, Model, DataType } from "sequelize-typescript";
+import { toDefaultValue } from "sequelize/types/utils";
 
 @Table({
   //table name is seen in database phpmyadmin
@@ -26,6 +21,12 @@ class User extends Model {
   })
   declare username: string;
   @Column({
+    type: DataType.ENUM('customer','admin'),
+    defaultValue: 'customer'
+    })
+    declare role: string;
+
+  @Column({
     type: DataType.STRING,
   })
   declare email: string;
@@ -34,4 +35,4 @@ class User extends Model {
   })
   declare password: string;
 }
-export default User
+export default User;

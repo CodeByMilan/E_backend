@@ -14,19 +14,25 @@ class Product extends Model {
   declare id: string;
   @Column({
     type: DataType.STRING,
+    allowNull:false 
   })
   declare productName: string;
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
+  
   })
   declare description: string;
   @Column({
-    type: DataType.DOUBLE,
+    type: DataType.INTEGER,
   })
   declare price: number;
   @Column({
+    type: DataType.INTEGER
+    })
+    declare productQuantity: number;
+  @Column({
     type: DataType.STRING,
     })
-    declare image: string;
+    declare  productImageUrl: string;
 }
 export default Product;

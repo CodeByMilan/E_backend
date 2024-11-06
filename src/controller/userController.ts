@@ -55,7 +55,7 @@ class AuthController {
     }
 
     //generate  token
-    const token = Jwt.sign({ id: user.id }, "milan", {
+    const token = Jwt.sign({ id: user.id }, process.env.SECRET_KEY as  string, {
       expiresIn: "1h",
     });
     res.status(200).json({

@@ -19,7 +19,7 @@ app.use(express.json())
 //loacalhost:3000/register
 app.use("",userRoute)
 
-app.use("",productRoute)
+app.use("/admin",productRoute)
 
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`)

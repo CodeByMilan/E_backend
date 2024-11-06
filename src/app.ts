@@ -9,6 +9,10 @@ dotenv.config();
 // require ("./model/index")
 import './database/connection'
 
+//admin seeder 
+import adminSeeder from './adminSeeder';
+adminSeeder()
+
 import userRoute from './routes/userRoute'
 import  productRoute from './routes/productRoutes'
 app.use(express.json())

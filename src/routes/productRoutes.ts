@@ -6,6 +6,6 @@ import authMiddleware, { Role } from '../middleware/authMiddleware'
 const upload = multer({storage:storage})
 const router:Router =express.Router()
 
-router.route("/product").post(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),upload.single('image'),productController.postProducts)
+router.route("/product").post(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),upload.single('image'),productController.postProducts).get(productController.getAllProducts)
 
 export default router

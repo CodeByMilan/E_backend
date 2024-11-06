@@ -9,12 +9,13 @@ dotenv.config();
 // require ("./model/index")
 import './database/connection'
 
-//admin seeder 
+// admin seeder 
 import adminSeeder from './adminSeeder';
 adminSeeder()
 
 import userRoute from './routes/userRoute'
 import  productRoute from './routes/productRoutes'
+import categoryController from './controller/categoryController';
 app.use(express.json())
 //loacalhost:3000/register
 app.use("",userRoute)
@@ -22,6 +23,7 @@ app.use("",userRoute)
 app.use("/admin",productRoute)
 
 app.listen(PORT,()=>{
+    categoryController.seedCategory()
     console.log(`Server is running on port ${PORT}`)
     })
 

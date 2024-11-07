@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import express,{ Request, Response ,Application} from "express";
 import Product from "../database/models/Product";
 import { AuthRequest } from "../middleware/authMiddleware";
 import User from "../database/models/User";
@@ -129,20 +129,41 @@ class productController {
   }
   public static async updateProduct(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
+    console.log("product id is :",id)
+    //findAll returns array
     const data = await Product.findAll({ 
         where: { 
             id 
         } 
     });
     if (data.length > 0) {
-        const { ProductName ,price,productQuantity,description,categoryId} = req.body;
-      await Product.update(
+        const { productName ,price,productQuantity,description,categoryId} = req.body;
+        console.log("the content in body",req.body)
+        console.log("the content in the file",req.file)
+        let filename = data[0].productImageUrl;
+        if (req.file) {
+            const newImage = req.file.filename;
+      
+            // Check if the current image is stored locally (not an HTTP URL)
+            if (!filename.startsWith("http")) {
+              const oldImagePath = path.join(__dirname, "../storage", filename);
+              if (fs.existsSync(oldImagePath)) {
+                // Delete the old image from local storage
+                fs.unlinkSync(oldImagePath);
+              }
+            }
+      
+            // Update filename to the new image
+            filename = newImage;
+          }
+     const updateData= await Product.update(
         {
          productQuantity,
-         ProductName,
+         productName,
          price,
          description,
-         categoryId
+         categoryId,
+         productImageUrl:filename
         }, 
         { 
             where: 
@@ -150,6 +171,7 @@ class productController {
         });
       res.status(200).json({
         message: "product updated successfully",
+        data:updateData
       });
     } else {
       res.status(404).json({

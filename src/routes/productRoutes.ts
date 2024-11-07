@@ -10,7 +10,8 @@ router.route("/admin/product").post(authMiddleware.isAuthenticated,authMiddlewar
 
 router.route("/product").get(productController.getAllProducts)
 
-router.route("/product/:id").get(productController.getOneProduct).delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.deleteProduct)
+router.route("/product/:id").get(productController.getOneProduct)
+.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.deleteProduct)
 .patch(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.updateProduct)
 
 export default router

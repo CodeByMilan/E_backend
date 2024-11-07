@@ -16,11 +16,14 @@ adminSeeder()
 import userRoute from './routes/userRoute'
 import  productRoute from './routes/productRoutes'
 import categoryController from './controller/categoryController';
+import categoryRoutes from './routes/categoryRoutes'
 app.use(express.json())
 //loacalhost:3000/register
 app.use("",userRoute)
 
-app.use("/admin",productRoute)
+app.use("",productRoute)
+
+app.use("",categoryRoutes)
 
 app.listen(PORT,()=>{
     categoryController.seedCategory()

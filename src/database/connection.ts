@@ -58,6 +58,10 @@ sequelize
     Order.belongsTo(Payment,{foreignKey:'paymentId'})
     Payment.hasOne(Order,{foreignKey:'paymentId'})
 
+    //user- order realtionship
+    User.hasMany(Order,{foreignKey:'userId'})
+    Order.belongsTo(User,{foreignKey:'userId'})
+
 
 
   

@@ -19,7 +19,7 @@ import  productRoute from './routes/productRoutes'
 import categoryController from './controller/categoryController';
 import categoryRoutes from './routes/categoryRoutes'
 import cartRoute from './routes/cartRoutes'
-
+import orderRoute from'./routes/orderRoutes'
 //loacalhost:3000/register
 app.use("",userRoute)
 
@@ -27,6 +27,8 @@ app.use("",productRoute)
 
 app.use("",categoryRoutes)
 app.use("/customer",cartRoute)
+app.use("/customer",orderRoute)
+
 
 app.listen(PORT,()=>{
     categoryController.seedCategory()

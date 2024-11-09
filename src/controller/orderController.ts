@@ -1,10 +1,11 @@
 import { AuthRequest } from "../middleware/authMiddleware";
-import { Response } from "express";
+import { Response, Request } from "express";
 import {
   KhaltiResponse,
   OrderData,
   OrderStatus,
   PaymentMethod,
+  paymentStatus,
   TransactionStatus,
   TransactionVerificationResponse,
 } from "../types/orderTypes";
@@ -14,6 +15,9 @@ import OrderDetail from "../database/models/OrderDetails";
 import axios from "axios";
 import Product from "../database/models/Product";
 
+class ExtendedOrder extends Order {
+  declare paymentId: string | null;
+}
 class OrderController {
   async createOrder(req: AuthRequest, res: Response): Promise<void> {
     const {
@@ -179,19 +183,22 @@ class OrderController {
   }
   async cancelOrder(req: AuthRequest, res: Response): Promise<void> {
     const orderId = req.params.id;
-    const userId = req.user?.id
+    const userId = req.user?.id;
     const order: any = await Order.findAll({
       where: {
         id: orderId,
-        userId
-      }
-    })
-    if (order?.orderStatus === OrderStatus.Ontheway || order?.orderStatus === OrderStatus.Preparation) {
+        userId,
+      },
+    });
+    if (
+      order?.orderStatus === OrderStatus.Ontheway ||
+      order?.orderStatus === OrderStatus.Preparation
+    ) {
       res.status(200).json({
         message: "you cant cancel this order",
         data: [],
-      })
-      return
+      });
+      return;
     }
     const cancelOrder = await Order.update(
       {
@@ -200,22 +207,94 @@ class OrderController {
       {
         where: {
           id: orderId,
-          userId
-        }
-      })
+          userId,
+        },
+      }
+    );
     if (cancelOrder) {
       res.status(200).json({
         message: "order cancelled successfully",
         data: [],
-      })
-      return
+      });
+      return;
     }
     res.status(404).json({
       message: "order not found",
       data: [],
-    })
+    });
   }
-//customer side ends here
+  //customer side ends here
+
+  //admin side starts here
+  async changeOrderStatus(req: Request, res: Response): Promise<void> {
+    const orderId = req.params.id;
+    const orderStatus: OrderStatus = req.body.orderStatus;
+    await Order.update(
+      {
+        orderStatus: orderStatus,
+      },
+      {
+        where: {
+          id: orderId,
+        },
+      }
+    );
+    res.status(200).json({
+      message: "order status changed successfully",
+    });
+  }
+
+  async changePaymentStatus(req: Request, res: Response): Promise<void> {
+    const orderId = req.params.id;
+    const paymentStatus: paymentStatus = req.body.paymentStatus;
+    const order = await Order.findByPk(orderId);
+    const extendedOrder: ExtendedOrder = order as ExtendedOrder;
+
+    await Payment.update(
+      {
+        paymentStatus: paymentStatus,
+      },
+      {
+        where: {
+          id: extendedOrder.paymentId,
+        },
+      }
+    );
+    res.status(200).json({
+      message: `payment status of orderId ${orderId} changed successfully to paymentstatus ${paymentStatus}`,
+    });
+  }
+
+  async deleteOrder(req: Request, res: Response): Promise<void> {
+    const orderId = req.params.id;
+    const order = await Order.findByPk(orderId);
+    const extendedOrder: ExtendedOrder = order as ExtendedOrder;
+    if (order) {
+      await OrderDetail.destroy({
+        where: {
+          orderId: orderId,
+        },
+      });
+      await Payment.destroy({
+        where: {
+          id: extendedOrder.paymentId,
+        },
+      });
+      await Order.destroy({
+        where: {
+          id: orderId,
+        },
+      });
+     
+      res.status(200).json({
+        message: `order with id ${orderId} deleted successfully`,
+      });
+    } else {
+      res.status(404).json({
+        message: `order with id ${orderId} not found`,
+      });
+    }
+  }
 }
 
 export default new OrderController();

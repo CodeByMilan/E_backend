@@ -20,7 +20,7 @@ export enum PaymentMethod{
     Khalti='khalti',
     Esewa='esewa'
 }
-enum paymentStatus{
+export enum paymentStatus{
     Paid='paid',
     Unpaid='unpaid'
 }

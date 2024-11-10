@@ -9,6 +9,12 @@ const app:Application =express()
 const PORT:number= 3000
 app.use('./src/storage', express.static('storage'));
 app.use(express.json());
+const cors = require("cors");
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 // admin seeder 
 import adminSeeder from './adminSeeder';
@@ -20,6 +26,8 @@ import categoryController from './controller/categoryController';
 import categoryRoutes from './routes/categoryRoutes'
 import cartRoute from './routes/cartRoutes'
 import orderRoute from'./routes/orderRoutes'
+
+
 //loacalhost:3000/register
 app.use("",userRoute)
 

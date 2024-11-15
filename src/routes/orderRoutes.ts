@@ -8,6 +8,7 @@ const router:Router =express.Router()
 
 router.route("")
 .post(authMiddleware.isAuthenticated,errorHandler(orderController.createOrder))
+.get(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),errorHandler(orderController.fetchOrderDetails))
 router.route("/verify")
 .post(authMiddleware.isAuthenticated,errorHandler(orderController.verifyTransaction))
 

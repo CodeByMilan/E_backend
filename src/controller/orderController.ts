@@ -295,6 +295,29 @@ class OrderController {
       });
     }
   }
+
+  async fetchOrderDetails(req: AuthRequest, res: Response): Promise<void> {
+ 
+    const orderDetails = await OrderDetail.findAll({
+    
+      include: [
+        {
+          model: Product,
+        },
+      ],
+    });
+    if (orderDetails.length > 0) {
+      res.status(200).json({
+        message: "order details fetched successfully",
+        data: orderDetails,
+      });
+    } else {
+      res.status(404).json({
+        message: "no order details found for this id",
+        data: [],
+      });
+    }
+  }
 }
 
 export default new OrderController();

@@ -3,6 +3,7 @@ import User from "../database/models/User";
 import bcrypt from "bcrypt";
 //for token
 import Jwt from "jsonwebtoken";
+import { AuthRequest } from "../middleware/authMiddleware";
 
 class AuthController {
   public static async registerUser(req: Request, res: Response): Promise<void> {
@@ -62,6 +63,21 @@ class AuthController {
       message: "User logged in successfully",
       data: token,
     });
+  }
+  public static async fetchUserDetails(req: AuthRequest, res: Response): Promise<void> {
+    const userDetails = await User.findAll({
+    });
+    if (userDetails.length > 0) {
+      res.status(200).json({
+        message: "user details fetched successfully",
+        data: userDetails,
+      });
+    } else {
+      res.status(404).json({
+        message: "no user details found for this id",
+        data: [],
+      });
+    }
   }
 }
 

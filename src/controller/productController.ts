@@ -76,7 +76,7 @@ class productController {
     res: Response
   ): Promise<void> {
     const id = req.params.id;
-    const data = await Product.findAll({
+    const data = await Product.findOne({
       where: {
         id: id,
       },
@@ -91,7 +91,7 @@ class productController {
         },
       ],
     });
-    if (data.length === 0) {
+    if (!data) {
       res.status(404).json({
         message: "product not found",
       });

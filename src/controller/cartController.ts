@@ -31,9 +31,14 @@ class cartController {
         quantity,
       });
     }
-    res.json({
+  const data=await Cart.findAll({
+    where:{
+      userId:userId
+    }
+  })
+    res.status(200).json({
       message: "product added to cart successfully",
-      data: cartItem,
+      data
     });
   }
   async getMyCarts(req: AuthRequest, res: Response): Promise<void> {
@@ -46,7 +51,7 @@ class cartController {
       include: [
         {
           model: Product,
-          attributes:["id","productName","productQuantity","description","productImageUrl"],
+          attributes:["id","productName","productQuantity","price","description","productImageUrl"],
           include:[
             {
               model:Category,

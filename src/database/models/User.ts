@@ -1,5 +1,4 @@
 import { Table, Column, Model, DataType } from "sequelize-typescript";
-import { toDefaultValue } from "sequelize/types/utils";
 
 @Table({
   //table name is seen in database phpmyadmin

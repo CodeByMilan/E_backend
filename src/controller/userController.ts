@@ -62,7 +62,7 @@ class AuthController {
     res.status(200).json({
       message: "User logged in successfully",
       data: token,
-    });
+    });     
   }
   public static async fetchUserDetails(req: AuthRequest, res: Response): Promise<void> {
     const userDetails = await User.findAll({

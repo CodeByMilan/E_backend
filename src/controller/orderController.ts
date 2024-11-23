@@ -14,6 +14,9 @@ import Payment from "../database/models/Payment";
 import OrderDetail from "../database/models/OrderDetails";
 import axios from "axios";
 import Product from "../database/models/Product";
+import Cart from "../database/models/Cart";
+import User from "../database/models/User";
+import Category from "../database/models/Category";
 
 class ExtendedOrder extends Order {
   declare paymentId: string | null;
@@ -53,12 +56,19 @@ class OrderController {
       userId,
       paymentId: paymentData.id,
     });
+    let responseOrderData;
     for (var i = 0; i < items.length; i++) {
-      await OrderDetail.create({
+      responseOrderData=await OrderDetail.create({
         quantity: items[i].quantity,
         productId: items[i].productId,
         orderId: orderData.id,
       });
+      await Cart.destroy({
+        where: {
+          userId: req.user?.id,
+          productId: items[i].productId,
+        }
+      })
     }
     if (paymentDetails.paymentMethod === PaymentMethod.Khalti) {
       //khalti integration
@@ -86,6 +96,7 @@ class OrderController {
       res.status(200).json({
         message: "payment initiated by khalti method",
         url: khaltiResponse.payment_url,
+        data:responseOrderData
       });
     } else {
       //cod
@@ -166,7 +177,25 @@ class OrderController {
       include: [
         {
           model: Product,
+          include:[
+            {
+              model:Category,
+              attributes:["categoryName"]
+            }
+          ]
         },
+        {
+          model:Order,
+          include:[
+            {
+              model:Payment,
+              attributes:["paymentMethod","paymentStatus"]
+            }
+          ]
+        },
+        {
+          model:User
+        }
       ],
     });
     if (orderDetails.length > 0) {

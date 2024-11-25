@@ -25,4 +25,7 @@ router.route("/admin/payment/:id")
 router.route("/admin/:id")
 .patch(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),errorHandler(orderController.changeOrderStatus))
 .delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),errorHandler(orderController.deleteOrder))
+
+router.route("/admin")
+.get(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),orderController.fetchOrder)
 export default router

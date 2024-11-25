@@ -8,7 +8,8 @@ router.route("/admin/category").post(authMiddleware.isAuthenticated,authMiddlewa
 
 router.route("/category").get(categoryController.getAllCategories)
 
-router.route("/category/:id").delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),categoryController.deleteCategory)
+router.route("/category/:id")
+.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),categoryController.deleteCategory)
 .patch(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),categoryController.updateCategory)
 
 export default router

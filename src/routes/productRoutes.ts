@@ -11,7 +11,8 @@ router.route("/admin/product").post(authMiddleware.isAuthenticated,authMiddlewar
 router.route("/product").get(productController.getAllProducts)
 
 router.route("/product/:id").get(productController.getOneProduct)
-.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.deleteProduct)
 .patch(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),upload.single('image'),productController.updateProduct)
 
+router.route("/admin/product/:id")
+.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.deleteProduct)
 export default router

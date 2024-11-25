@@ -10,8 +10,11 @@ router.route("/register")
 router.route("/login").post(errorHandler(AuthController.loginUser))
 
 
-router.route("/users")
+router.route("/admin/users")
 .get(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),errorHandler(AuthController.fetchUserDetails))
 
+
+router.route("/admin/users/:id")
+.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),errorHandler(AuthController.deleteUser))
 
 export default router

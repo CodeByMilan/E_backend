@@ -14,11 +14,13 @@ class productController {
     const userId = req.user?.id;
 
     let filename;
-    // console.log("File in req.file:", req.file);
-    // console.log("Request body:", req.body);
+    console.log("File in req.file:", req.file);
+    console.log("Request body:", req.body);
     if (req.file) {
-      filename = req.file?.filename;
+       filename = process.env.BACKENDURL+ req.file.filename;
+      console.log("File uploaded successfully, filename:", filename);
     } else {
+      console.log("No file uploaded");
       filename =
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmZBWXUFYSEz3ZFW7Fa7wtzKdtMgcPqNpWvQ&s";
     }
@@ -37,17 +39,18 @@ class productController {
       });
       return;
     }
-    await Product.create({
+   const response = await Product.create({
       productName,
       price,
       description,
       productQuantity,
-      productImageUrl: filename,
+      productImageUrl:filename,
       userId: userId,
       categoryId: categoryId,
     });
     res.status(200).json({
       message: "product uploaded successfuly",
+      data:response
     });
   }
   public static async getAllProducts(

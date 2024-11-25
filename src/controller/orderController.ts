@@ -142,6 +142,7 @@ class OrderController {
       });
     }
   }
+
   //Customer side starts
   async fetchMyOrder(req: AuthRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
@@ -167,49 +168,46 @@ class OrderController {
       });
     }
   }
-  async fetchMyOrderDetails(req: AuthRequest, res: Response): Promise<void> {
-    const userId = req.user?.id;
-    const orderId = req.params.id;
-    const orderDetails = await OrderDetail.findAll({
-      where: {
-        orderId,
-      },
-      include: [
-        {
-          model: Product,
-          include:[
-            {
-              model:Category,
-              attributes:["categoryName"]
-            }
-          ]
+  async fetchMyOrderDetails(req:AuthRequest,res:Response):Promise<void>{
+    const orderId = req.params.id 
+   const orderDetails =  await OrderDetail.findAll({
+        where : {
+            orderId
         },
-        {
-          model:Order,
-          include:[
+        include : [{
+            model : Product,
+            include : [
+                {
+                    model : Category,
+                    attributes : ["categoryName"]
+                }
+            ]
+        },{
+            model : Order,
+            include : [{
+                model : Payment,
+                attributes : ["paymentMethod",'paymentStatus']
+            },
             {
-              model:Payment,
-              attributes:["paymentMethod","paymentStatus"]
+                model : User,
+                attributes : ["username","email"]
             }
-          ]
-        },
-        {
-          model:User
-        }
-      ],
-    });
-    if (orderDetails.length > 0) {
-      res.status(200).json({
-        message: "order details fetched successfully",
-        data: orderDetails,
-      });
-    } else {
-      res.status(404).json({
-        message: "no order details found for this id",
-        data: [],
-      });
+    ]
+            
+        }]
+    })
+    if(orderDetails.length > 0 ){
+        res.status(200).json({
+            message : "orderDetails fetched successfully",
+            data : orderDetails
+        })
+    }else{
+        res.status(404).json({
+            message : "no any orderDetails of that id",
+            data : []
+        })
     }
-  }
+}
   async cancelOrder(req: AuthRequest, res: Response): Promise<void> {
     const orderId = req.params.id;
     const userId = req.user?.id;
@@ -326,7 +324,6 @@ class OrderController {
   }
 
   async fetchOrderDetails(req: AuthRequest, res: Response): Promise<void> {
- 
     const orderDetails = await OrderDetail.findAll({
     
       include: [
@@ -347,6 +344,27 @@ class OrderController {
       });
     }
   }
+  async fetchOrder(req: AuthRequest, res: Response): Promise<void> {
+    const orders = await Order.findAll({
+      include: [
+        {
+          model: Payment,
+        },
+      ],
+    });
+    if (orders.length > 0) {
+      res.status(200).json({
+        message: "orders fetched successfully",
+        data: orders,
+      });
+    } else {
+      res.status(404).json({
+        message: "no orders found",
+        data: [],
+      });
+    }
+  }
 }
+
 
 export default new OrderController();

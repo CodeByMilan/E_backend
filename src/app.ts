@@ -7,8 +7,9 @@ dotenv.config();
 import './database/connection'
 const app:Application =express()
 const PORT:number= 3000
-app.use('./src/storage', express.static('storage'));
+app.use(express.static('./src/storage/'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const cors = require("cors");
 app.use(
   cors({

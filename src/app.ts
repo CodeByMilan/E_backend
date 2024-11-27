@@ -31,6 +31,7 @@ import orderRoute from "./routes/orderRoutes";
 import { Server } from "socket.io";
 import { promisify } from "util";
 import jwt from "jsonwebtoken";
+import User from "./database/models/User";
 
 //loacalhost:3000/register
 app.use("", userRoute);
@@ -51,7 +52,7 @@ const io = new Server(server,{
   }
 })
 
-let onlineUsers:any = []
+let onlineUsers:any[] = []
 const addToOnlineUsers = (socketId:string,userId:string,role:string)=>{
   onlineUsers = onlineUsers.filter((user:any)=>user.userId !==userId)
   onlineUsers.push({socketId,userId,role})
@@ -59,16 +60,37 @@ const addToOnlineUsers = (socketId:string,userId:string,role:string)=>{
 io.on("connection",async (socket)=>{
   console.log("A client connected")
   const {token} = socket.handshake.auth 
+  console.log("token:",token)
   if(token){
-      //@ts-ignore
-      const decoded = await promisify(jwt.verify)(token,process.env.SECRET_KEY)
-      //@ts-ignore
-      const doesUserExists = await User.findByPk(decoded.id)
-      if(doesUserExists){
-          addToOnlineUsers(socket.id,doesUserExists.id,doesUserExists.role)
+    try{
+        //@ts-ignore
+    const decoded = await promisify(jwt.verify)(token, process.env.SECRET_KEY);
+    console.log("Decoded token:", decoded); 
+       //@ts-ignore
+       const doesUserExists = await User.findByPk(decoded.id);
+       if (doesUserExists) {
+         console.log("User found:", doesUserExists);  
+         addToOnlineUsers(socket.id, doesUserExists.id, doesUserExists.role);
+       }
+       else {
+        console.log("User does not exist");
+        socket.emit("error", { message: "User not found" });
+        socket.disconnect();
       }
+    }catch (error: any) {
+      if (error.name === 'TokenExpiredError') {
+        console.log("Token expired");
+        socket.emit("error", { message: "Token expired" });
+      } else {
+        console.error("Token verification failed:", error.message);
+        socket.emit("error", { message: "Invalid or expired token" });
+      }
+      socket.disconnect();
+    }
+     
   }
   socket.on("updatedOrderStatus",({status,orderId,userId})=>{
+    console.log("Emitting status update:", { status, orderId, userId });
       const findUser = onlineUsers.find((user:any)=>user.userId == userId)
       if(findUser){
           io.to(findUser.socketId).emit("statusUpdated",
@@ -76,5 +98,9 @@ io.on("connection",async (socket)=>{
           )
       }
   })
+  socket.on("disconnect", () => {
+    onlineUsers = onlineUsers.filter((user: any) => user.socketId !== socket.id);
+    console.log(`User with socket ID ${socket.id} disconnected`);
+  });
   console.log(onlineUsers)
 })

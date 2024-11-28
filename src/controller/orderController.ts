@@ -256,7 +256,7 @@ class OrderController {
   async changeOrderStatus(req: Request, res: Response): Promise<void> {
     const orderId = req.params.id;
     const orderStatus: OrderStatus = req.body.orderStatus;
-    await Order.update(
+   const data= await Order.update(
       {
         orderStatus: orderStatus,
       },
@@ -268,6 +268,7 @@ class OrderController {
     );
     res.status(200).json({
       message: "order status changed successfully",
+      data:data
     });
   }
 

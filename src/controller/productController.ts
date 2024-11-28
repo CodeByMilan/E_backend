@@ -13,16 +13,13 @@ class productController {
   ): Promise<void> {
     const userId = req.user?.id;
 
-    let filename;
+    let fileName;
     console.log("File in req.file:", req.file);
     console.log("Request body:", req.body);
-    if (req.file) {
-       filename = process.env.BACKENDURL+ req.file.filename;
-      console.log("File uploaded successfully, filename:", filename);
-    } else {
-      console.log("No file uploaded");
-      filename =
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmZBWXUFYSEz3ZFW7Fa7wtzKdtMgcPqNpWvQ&s";
+    if(req.file){
+        fileName  = `${process.env.BACKENDURL}/${req.file?.filename}`
+    }else{
+        fileName = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aGVhZHBob25lfGVufDB8fDB8fHww"
     }
     const { productName, price, description, productQuantity, categoryId } =
       req.body;
@@ -44,7 +41,7 @@ class productController {
       price,
       description,
       productQuantity,
-      productImageUrl:filename,
+      productImageUrl:fileName,
       userId: userId,
       categoryId: categoryId,
     });

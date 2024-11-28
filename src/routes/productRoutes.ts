@@ -1,18 +1,46 @@
-import express,{Router} from 'express'
-import productController from '../controller/productController'
-import authMiddleware, { Role } from '../middleware/authMiddleware'
+import express, { Router } from 'express';
+import productController from '../controller/productController';
+import authMiddleware, { Role } from '../middleware/authMiddleware';
 import {multer,storage} from '../middleware/multerConfig'
 
-const upload = multer({storage : storage})
-const router:Router =express.Router()
+const upload = multer({storage : storage}) 
 
-router.route("/admin/product").post(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),upload.single('image'),productController.postProducts)
+const router: Router = express.Router();
 
-router.route("/product").get(productController.getAllProducts)
+router
+  .route('/admin/product')
+  .post(
+    authMiddleware.isAuthenticated, 
+    authMiddleware.resetrictTo(Role.ADMIN), 
+    upload.single('image'), 
+    (req, res, next) => {
+        console.log('File in req.file:', req.file); 
+        console.log('Request body:', req.body); 
+        next();
+      },
+    productController.postProducts 
+  );
 
-router.route("/product/:id").get(productController.getOneProduct)
-.patch(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),upload.single('image'),productController.updateProduct)
+router.route('/product').get(productController.getAllProducts);
 
-router.route("/admin/product/:id")
-.delete(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),productController.deleteProduct)
-export default router
+router.route('/product/:id').get(productController.getOneProduct);
+
+router
+  .route('/product/:id')
+  .patch(
+    authMiddleware.isAuthenticated, 
+    authMiddleware.resetrictTo(Role.ADMIN), 
+    upload.single('image'),
+    productController.updateProduct 
+  );
+
+
+router
+  .route('/admin/product/:id')
+  .delete(
+    authMiddleware.isAuthenticated,
+    authMiddleware.resetrictTo(Role.ADMIN), 
+    productController.deleteProduct 
+  );
+
+export default router;

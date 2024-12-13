@@ -146,7 +146,7 @@ class productController {
       
             // Check if the current image is stored locally (not an HTTP URL)
             if (!filename.startsWith("http")) {
-              const oldImagePath = path.join(__dirname, "../storage", filename);
+              const oldImagePath = path.join(__dirname, "../uploads", filename);
               if (fs.existsSync(oldImagePath)) {
                 // Delete the old image from local storage
                 fs.unlinkSync(oldImagePath);

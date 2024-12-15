@@ -112,7 +112,14 @@ io.on("connection", async (socket) => {
       console.log("User not found in online users.");
     }
   });
-
+    socket.on("paymentStatusUpdate", ({ status, orderId, userId }) => {
+      const findUser = onlineUsers.find((user: any) => user.userId === userId);
+      if (findUser) {
+        io.to(findUser.socketId).emit("paymentStatusChanged", { status, orderId });
+      } else {
+      console.log("User not found in online users.");
+    }
+    });
   socket.on("disconnect", () => {
     onlineUsers = onlineUsers.filter(
       (user: any) => user.socketId !== socket.id

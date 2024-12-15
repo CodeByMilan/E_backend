@@ -21,8 +21,8 @@ export enum PaymentMethod{
     Esewa='esewa'
 }
 export enum paymentStatus{
-    Paid='paid',
-    Unpaid='unpaid'
+    paid='paid',
+    unpaid='unpaid'
 }
 export interface KhaltiResponse{
     pidx:string,

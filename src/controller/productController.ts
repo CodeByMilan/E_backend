@@ -12,14 +12,13 @@ class productController {
     res: Response
   ): Promise<void> {
     const userId = req.user?.id;
-
     let fileName;
-    console.log("File in req.file:", req.file);
-    console.log("Request body:", req.body);
+    //console.log("File in req.file:", req.file);
+    //console.log("Request body:", req.body);
     if(req.file){
         fileName  = `${process.env.BACKENDURL}/${req.file?.filename}`
     }else{
-        fileName = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aGVhZHBob25lfGVufDB8fDB8fHww"
+        fileName = "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlycG9kc3xlbnwwfHwwfHx8MA%3D%3D"
     }
     const { productName, price, description, productQuantity, categoryId } =
       req.body;
@@ -50,6 +49,7 @@ class productController {
       data:response
     });
   }
+
   public static async getAllProducts(
     req: Request,
     res: Response
@@ -129,7 +129,7 @@ class productController {
   }
   public static async updateProduct(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    console.log("product id is :",id)
+    //console.log("product id is :",id)
     //findAll returns array
     const data = await Product.findAll({ 
         where: { 
@@ -142,10 +142,10 @@ class productController {
         console.log("the content in the file",req.file)
         let filename = data[0].productImageUrl;
         if (req.file) {
-            const newImage = req.file.filename;
+            const newImage = `${process.env.BACKENDURL}/${req.file?.filename}`
       
             // Check if the current image is stored locally (not an HTTP URL)
-            if (!filename.startsWith("http")) {
+            if (!filename.startsWith("https")) {
               const oldImagePath = path.join(__dirname, "../uploads", filename);
               if (fs.existsSync(oldImagePath)) {
                 // Delete the old image from local storage

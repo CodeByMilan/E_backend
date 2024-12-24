@@ -5,6 +5,8 @@ import User from "../database/models/User";
 import Category from "../database/models/Category";
 import fs from "fs";
 import path from "path";
+import { QueryTypes } from "sequelize";
+
 
 class productController {
   public static async postProducts(
@@ -179,5 +181,42 @@ class productController {
       });
     }
   }
+  public static async getTopSellingProducts(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+      const sql = `
+        SELECT 
+          p.id, 
+          p.productName,
+          p.price,
+          p.description,
+          p.productImageUrl,
+          COUNT(od.productId) AS total_sales
+        FROM products p
+        LEFT JOIN orderdetails od ON od.productId = p.id
+        GROUP BY p.id
+        ORDER BY total_sales DESC
+        LIMIT 5;
+      `;
+      const topSellingProducts = await Product.sequelize?.query(sql, {
+        type: QueryTypes.SELECT,
+      });
+      // console.log("Top Selling Products:", topSellingProducts);
+
+      if (!topSellingProducts || topSellingProducts.length === 0) {
+        res.status(404).json({
+          message: "No top-selling products found",
+        });
+        return;
+      }
+      res.status(200).json({
+        message: "Top-selling products fetched successfully",
+        data: topSellingProducts,
+      });
+    
+  }
 }
+
+
 export default productController;

@@ -43,7 +43,7 @@ export enum TransactionStatus{
     Completed='Completed',
     Refunded ='Refunded',
     Pending='Pending',
-    initiated='Initiated'
+    Initiated='Initiated'
 }
 export enum OrderStatus{
     Pending='pending',

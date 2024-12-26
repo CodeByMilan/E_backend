@@ -29,5 +29,4 @@ router.route("/admin/:id")
 router.route("/admin")
 .get(authMiddleware.isAuthenticated,authMiddleware.resetrictTo(Role.ADMIN),orderController.fetchOrder)
 export default router
-router.route("/verify")
-  .post(authMiddleware.isAuthenticated, errorHandler(orderController.verifyTransaction))
+

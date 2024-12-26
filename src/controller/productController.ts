@@ -1,4 +1,4 @@
-import express,{ Request, Response ,Application} from "express";
+import express, { Request, Response, Application } from "express";
 import Product from "../database/models/Product";
 import { AuthRequest } from "../middleware/authMiddleware";
 import User from "../database/models/User";
@@ -6,7 +6,6 @@ import Category from "../database/models/Category";
 import fs from "fs";
 import path from "path";
 import { QueryTypes } from "sequelize";
-
 
 class productController {
   public static async postProducts(
@@ -17,10 +16,11 @@ class productController {
     let fileName;
     //console.log("File in req.file:", req.file);
     //console.log("Request body:", req.body);
-    if(req.file){
-        fileName  = `${process.env.BACKENDURL}/${req.file?.filename}`
-    }else{
-        fileName = "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlycG9kc3xlbnwwfHwwfHx8MA%3D%3D"
+    if (req.file) {
+      fileName = `${process.env.BACKENDURL}/${req.file?.filename}`;
+    } else {
+      fileName =
+        "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlycG9kc3xlbnwwfHwwfHx8MA%3D%3D";
     }
     const { productName, price, description, productQuantity, categoryId } =
       req.body;
@@ -37,18 +37,18 @@ class productController {
       });
       return;
     }
-   const response = await Product.create({
+    const response = await Product.create({
       productName,
       price,
       description,
       productQuantity,
-      productImageUrl:fileName,
+      productImageUrl: fileName,
       userId: userId,
       categoryId: categoryId,
     });
     res.status(200).json({
       message: "product uploaded successfuly",
-      data:response
+      data: response,
     });
   }
 
@@ -129,51 +129,55 @@ class productController {
       });
     }
   }
-  public static async updateProduct(req: Request, res: Response): Promise<void> {
+  public static async updateProduct(
+    req: Request,
+    res: Response
+  ): Promise<void> {
     const { id } = req.params;
     //console.log("product id is :",id)
     //findAll returns array
-    const data = await Product.findAll({ 
-        where: { 
-            id 
-        } 
+    const data = await Product.findAll({
+      where: {
+        id,
+      },
     });
     if (data.length > 0) {
-        const { productName ,price,productQuantity,description,categoryId} = req.body;
-        console.log("the content in body",req.body)
-        console.log("the content in the file",req.file)
-        let filename = data[0].productImageUrl;
-        if (req.file) {
-            const newImage = `${process.env.BACKENDURL}/${req.file?.filename}`
-      
-            // Check if the current image is stored locally (not an HTTP URL)
-            if (!filename.startsWith("https")) {
-              const oldImagePath = path.join(__dirname, "../uploads", filename);
-              if (fs.existsSync(oldImagePath)) {
-                // Delete the old image from local storage
-                fs.unlinkSync(oldImagePath);
-              }
-            }
-      
-            // Update filename to the new image
-            filename = newImage;
+      const { productName, price, productQuantity, description, categoryId } =
+        req.body;
+      console.log("the content in body", req.body);
+      console.log("the content in the file", req.file);
+      let filename = data[0].productImageUrl;
+      if (req.file) {
+        const newImage = `${process.env.BACKENDURL}/${req.file?.filename}`;
+
+        // Check if the current image is stored locally (not an HTTP URL)
+        if (!filename.startsWith("https")) {
+          const oldImagePath = path.join(__dirname, "../uploads", filename);
+          if (fs.existsSync(oldImagePath)) {
+            // Delete the old image from local storage
+            fs.unlinkSync(oldImagePath);
           }
-     const updateData= await Product.update(
+        }
+
+        // Update filename to the new image
+        filename = newImage;
+      }
+      const updateData = await Product.update(
         {
-         productQuantity,
-         productName,
-         price,
-         description,
-         categoryId,
-         productImageUrl:filename
-        }, 
-        { 
-            where: 
-            { id } 
-        });
+          productQuantity,
+          productName,
+          price,
+          description,
+          categoryId,
+          productImageUrl: filename,
+        },
+        {
+          where: { id },
+        }
+      );
       res.status(200).json({
         message: "product updated successfully",
-        data:updateData
+        data: updateData,
       });
     } else {
       res.status(404).json({
@@ -185,38 +189,39 @@ class productController {
     req: Request,
     res: Response
   ): Promise<void> {
-      const sql = `
+    const sql = `
         SELECT 
           p.id, 
           p.productName,
           p.price,
           p.description,
           p.productImageUrl,
+          p.productQuantity,
+          c.categoryName,
           COUNT(od.productId) AS total_sales
         FROM products p
         LEFT JOIN orderdetails od ON od.productId = p.id
-        GROUP BY p.id
+        LEFT JOIN categories c ON c.id = p.categoryId
+        GROUP BY p.id, c.categoryName
         ORDER BY total_sales DESC
         LIMIT 5;
       `;
-      const topSellingProducts = await Product.sequelize?.query(sql, {
-        type: QueryTypes.SELECT,
-      });
-      // console.log("Top Selling Products:", topSellingProducts);
+    const topSellingProducts = await Product.sequelize?.query(sql, {
+      type: QueryTypes.SELECT,
+    });
+    // console.log("Top Selling Products:", topSellingProducts);
 
-      if (!topSellingProducts || topSellingProducts.length === 0) {
-        res.status(404).json({
-          message: "No top-selling products found",
-        });
-        return;
-      }
-      res.status(200).json({
-        message: "Top-selling products fetched successfully",
-        data: topSellingProducts,
+    if (!topSellingProducts || topSellingProducts.length === 0) {
+      res.status(404).json({
+        message: "No top-selling products found",
       });
-    
+      return;
+    }
+    res.status(200).json({
+      message: "Top-selling products fetched successfully",
+      data: topSellingProducts,
+    });
   }
 }
-
 
 export default productController;

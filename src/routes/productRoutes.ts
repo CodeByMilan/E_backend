@@ -25,9 +25,6 @@ router
 router.route('/product').get(productController.getAllProducts)
 router.route('/product/top').get(productController.getTopSellingProducts)
 router.route('/product/:id').get(errorHandler( productController.getOneProduct));
-
-
-
 router
   .route('/product/:id')
   .patch(

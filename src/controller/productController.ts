@@ -1,11 +1,12 @@
-import express, { Request, Response, Application } from "express";
-import Product from "../database/models/Product";
-import { AuthRequest } from "../middleware/authMiddleware";
-import User from "../database/models/User";
-import Category from "../database/models/Category";
+import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
 import { QueryTypes } from "sequelize";
+import Category from "../database/models/Category";
+import Product from "../database/models/Product";
+import User from "../database/models/User";
+import { AuthRequest } from "../middleware/authMiddleware";
+import { console } from "inspector";
 
 class productController {
   public static async postProducts(
@@ -14,10 +15,8 @@ class productController {
   ): Promise<void> {
     const userId = req.user?.id;
     let fileName;
-    //console.log("File in req.file:", req.file);
-    //console.log("Request body:", req.body);
     if (req.file) {
-      fileName = `${process.env.BACKENDURL}/${req.file?.filename}`;
+      fileName = `${process.env.CLOUDINARYIMAGEURL}/${req.file?.filename}`;
     } else {
       fileName =
         "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWlycG9kc3xlbnwwfHwwfHx8MA%3D%3D";
@@ -133,9 +132,8 @@ class productController {
     req: Request,
     res: Response
   ): Promise<void> {
+    console.log("inside upadte product");
     const { id } = req.params;
-    //console.log("product id is :",id)
-    //findAll returns array
     const data = await Product.findAll({
       where: {
         id,
@@ -144,11 +142,11 @@ class productController {
     if (data.length > 0) {
       const { productName, price, productQuantity, description, categoryId } =
         req.body;
-      console.log("the content in body", req.body);
-      console.log("the content in the file", req.file);
+        console.log("productimageurl",data[0].productImageUrl)
       let filename = data[0].productImageUrl;
       if (req.file) {
-        const newImage = `${process.env.BACKENDURL}/${req.file?.filename}`;
+        console.log("inside file",req.file.filename)
+        const newImage = `${process.env.CLOUDINARYIMAGEURL}/${req.file?.filename}`;
 
         // Check if the current image is stored locally (not an HTTP URL)
         if (!filename.startsWith("https")) {

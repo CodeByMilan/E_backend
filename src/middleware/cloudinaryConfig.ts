@@ -1,23 +1,45 @@
-// import cloudinary from 'cloudinary';
-// import { CloudinaryStorage } from 'multer-storage-cloudinary';
-// import multer from 'multer';
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { Request } from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 
-// // Configure Cloudinary
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-//   api_key: process.env.CLOUDINARY_API_KEY, 
-//   api_secret: process.env.CLOUDINARY_API_SECRET, 
-// });
+try {
+   
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET_KEY, 
+    });
 
-// const storage = new CloudinaryStorage({
-//   cloudinary: cloudinary.v2,
-//   params: {
-//     resource_type: 'auto', 
-//     allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
-//     transformation: [{ width: 500, height: 500, crop: 'limit' }], 
-//   },
-// });
+} catch (error) {
+    console.error('Error during Cloudinary configuration:', error);
+}
+const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/avif', 'image/webp'];
 
-// const upload = multer({ storage });
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req: Request, file: Express.Multer.File) => {
+        console.log(file)
+        if (!allowedFileTypes.includes(file.mimetype)) {
+            throw new Error('Invalid file type. Only JPG, JPEG, PNG, AVIF, and WEBP are allowed.');
+        }
+        //it is important to remove the extension of the file as cloudinary automatically adds the file extension while accessing the images from cloudinary in frontend
+        let fileName=file.originalname.split('.')[0];
+        return {
+            folder: 'sajhaPasal', 
+            format: file.mimetype.split('/')[1], 
+            public_id: Date.now() + '-' + fileName, 
+        };
+    },
+});
 
-// export { upload };
+const upload = multer({
+    storage,
+    limits: {
+        fileSize: 2 * 1024 * 1024, 
+    },
+});
+
+export { upload };

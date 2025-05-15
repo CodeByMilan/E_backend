@@ -73,10 +73,10 @@ class OrderController {
     if (paymentDetails.paymentMethod === PaymentMethod.Khalti) {
       //khalti integration
       const data = {
-        return_url: "http://localhost:5173/success",
+        return_url: "https://e-frontend-zeta.vercel.app/success",
         purchase_order_id: orderData.id,
         amount: totalAmount * 100,
-        website_url: "http://localhost:5173/",
+        website_url: "https://e-frontend-zeta.vercel.app/",
         purchase_order_name: "ordername_" + orderData.id,
       };
       const response = await axios.post(
